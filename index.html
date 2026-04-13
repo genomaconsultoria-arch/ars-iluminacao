@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ARS Iluminação — Relatório de Visitação Sodimac</title>
+<title>ARS Iluminacao — Relatorio de Visitacao Sodimac</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b5fff">
+<meta name="theme-color" content="#1a2a5e">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,30 +16,67 @@
 
 <header class="topbar no-print">
   <div class="brand">
-    <div class="logo">ARS</div>
-    <div>
-      <h1>ARS Iluminação</h1>
-      <small>Relatório de Visitação — Rede Sodimac</small>
+    <img src="logo-ars.png" alt="ARS Iluminacao" class="logo-img">
+    <div class="brand-text">
+      <h1>ARS Iluminacao</h1>
+      <small>Relatorio de Visitacao — Rede Sodimac</small>
     </div>
   </div>
   <nav>
-    <button data-view="dashboard" class="nav-btn active">Visitas</button>
-    <button data-view="new" class="nav-btn">Nova Visita</button>
-    <button data-view="catalog" class="nav-btn">Catálogo</button>
-    <button data-view="about" class="nav-btn">Sobre</button>
+    <button data-view="dashboard" class="nav-btn active">
+      <span class="nav-icon">&#128202;</span> Visitas
+    </button>
+    <button data-view="new" class="nav-btn">
+      <span class="nav-icon">&#10133;</span> Nova Visita
+    </button>
+    <button data-view="catalog" class="nav-btn">
+      <span class="nav-icon">&#128218;</span> Catalogo
+    </button>
+    <button data-view="about" class="nav-btn">
+      <span class="nav-icon">&#9432;</span> Sobre
+    </button>
   </nav>
 </header>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner" class="install-banner hidden">
+  <div class="install-content">
+    <img src="logo-ars.png" alt="ARS" class="install-logo">
+    <div>
+      <strong>Instalar ARS Visitas</strong>
+      <small>Acesse rapido pelo celular ou PC</small>
+    </div>
+  </div>
+  <div class="install-actions">
+    <button class="btn primary" id="btn-install">Instalar App</button>
+    <button class="btn ghost" id="btn-dismiss">Depois</button>
+  </div>
+</div>
 
 <main id="app">
 
   <!-- DASHBOARD -->
   <section id="view-dashboard" class="view active">
-    <div class="page-head">
+    <div id="welcome-hero" class="welcome-hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <img src="logo-ars.png" alt="ARS Iluminacao" class="hero-logo">
+        <h2>Bem-vindo ao sistema de visitacao</h2>
+        <p>Gerencie suas visitas as lojas Sodimac, registre produtos e gere relatorios comparativos profissionais.</p>
+        <div class="hero-stats" id="hero-stats"></div>
+        <button class="btn primary hero-btn" onclick="showView('new')">
+          <span>&#10133;</span> Iniciar nova visita
+        </button>
+      </div>
+    </div>
+
+    <div class="page-head" id="visits-head" style="display:none">
       <h2>Visitas realizadas</h2>
       <button class="btn primary" onclick="showView('new')">+ Nova visita</button>
     </div>
     <div id="visit-list" class="grid"></div>
     <div id="empty-state" class="empty hidden">
+      <div class="empty-icon">&#128203;</div>
       <p>Nenhuma visita cadastrada ainda.</p>
       <button class="btn primary" onclick="showView('new')">Criar primeira visita</button>
     </div>
@@ -56,7 +93,7 @@
     </div>
 
     <div class="card">
-      <h3>Cabeçalho</h3>
+      <h3>Cabecalho</h3>
       <div class="form-grid">
         <label>Loja Sodimac
           <input type="text" id="f-loja" placeholder="Ex.: Sodimac Recife">
@@ -85,11 +122,11 @@
 
     <div class="card">
       <h3>Fotos do Expositor</h3>
-      <p class="muted" style="margin-bottom:14px">Registre o expositor completo antes e depois da intervenção. Você pode adicionar várias fotos em cada etapa.</p>
+      <p class="muted" style="margin-bottom:14px">Registre o expositor completo antes e depois da intervencao. Voce pode adicionar varias fotos em cada etapa.</p>
       <div class="expo-grid">
         <div class="expo-col">
           <div class="expo-head">
-            <h4>📷 ANTES</h4>
+            <h4>ANTES</h4>
             <button class="btn ghost small" onclick="document.getElementById('expo-antes-input').click()">+ Adicionar fotos</button>
             <input type="file" id="expo-antes-input" accept="image/*" capture="environment" multiple style="display:none" onchange="addExpoPhotos(event,'antes')">
           </div>
@@ -97,7 +134,7 @@
         </div>
         <div class="expo-col">
           <div class="expo-head">
-            <h4>📷 DEPOIS</h4>
+            <h4>DEPOIS</h4>
             <button class="btn ghost small" onclick="document.getElementById('expo-depois-input').click()">+ Adicionar fotos</button>
             <input type="file" id="expo-depois-input" accept="image/*" capture="environment" multiple style="display:none" onchange="addExpoPhotos(event,'depois')">
           </div>
@@ -110,7 +147,7 @@
       <div class="row-between">
         <h3>Produtos vistoriados</h3>
         <div>
-          <button class="btn ghost" onclick="loadCatalogToVisit()">Carregar catálogo padrão</button>
+          <button class="btn ghost" onclick="loadCatalogToVisit()">Carregar catalogo padrao</button>
           <button class="btn ghost" onclick="addRow()">+ Adicionar produto</button>
         </div>
       </div>
@@ -120,12 +157,12 @@
           <thead>
             <tr>
               <th>Img</th>
-              <th>Código</th>
-              <th>Cód. Barras<br>(EAN)</th>
+              <th>Codigo</th>
+              <th>Cod. Barras<br>(EAN)</th>
               <th>Produto</th>
               <th>Exposto<br>(S/N)</th>
               <th>Qtd Loja</th>
-              <th>Observações</th>
+              <th>Observacoes</th>
               <th></th>
             </tr>
           </thead>
@@ -135,26 +172,26 @@
     </div>
 
     <div class="card">
-      <h3>Conclusões / sugestões gerais</h3>
-      <textarea id="f-conclusoes" rows="4" placeholder="Resumo executivo da visita, sugestões de melhorias, próximos passos..."></textarea>
+      <h3>Conclusoes / sugestoes gerais</h3>
+      <textarea id="f-conclusoes" rows="4" placeholder="Resumo executivo da visita, sugestoes de melhorias, proximos passos..."></textarea>
     </div>
   </section>
 
   <!-- CATALOG -->
   <section id="view-catalog" class="view">
     <div class="page-head">
-      <h2>Catálogo de produtos ARS</h2>
-      <button class="btn ghost" onclick="resetCatalog()">Restaurar catálogo padrão</button>
+      <h2>Catalogo de produtos ARS</h2>
+      <button class="btn ghost" onclick="resetCatalog()">Restaurar catalogo padrao</button>
     </div>
     <div class="card">
-      <p class="muted">Catálogo base usado no formulário de visita. Você pode editar, adicionar ou remover itens.</p>
+      <p class="muted">Catalogo base usado no formulario de visita. Voce pode editar, adicionar ou remover itens.</p>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Imagem</th>
-              <th>Código</th>
-              <th>Cód. Barras (EAN)</th>
+              <th>Codigo</th>
+              <th>Cod. Barras (EAN)</th>
               <th>Produto</th>
               <th>Estoque ideal<br>gancheira</th>
               <th></th>
@@ -164,25 +201,65 @@
         </table>
       </div>
       <div style="margin-top:12px">
-        <button class="btn primary" onclick="addCatalogItem()">+ Adicionar item ao catálogo</button>
+        <button class="btn primary" onclick="addCatalogItem()">+ Adicionar item ao catalogo</button>
       </div>
     </div>
   </section>
 
   <!-- ABOUT -->
   <section id="view-about" class="view">
-    <div class="card">
+    <div class="card about-card">
+      <img src="logo-ars.png" alt="ARS Iluminacao" class="about-logo">
       <h2>Sobre o aplicativo</h2>
-      <p>Aplicativo desenvolvido para a <strong>ARS Iluminação</strong> auxiliar nas visitas à rede <strong>Sodimac</strong>. Replica o relatório de visitação em papel utilizado em campo e adiciona recursos digitais:</p>
-      <ul>
-        <li>Cadastro completo da visita (loja, visitador, data, BR/setor).</li>
-        <li>Lista de produtos com código, exposto S/N, quantidade, preço e estoque ideal de gancheira.</li>
-        <li><strong>Importação de fotos ANTES e DEPOIS</strong> por produto.</li>
-        <li><strong>Relatório comparativo automático</strong> com indicadores de melhoria, % de evolução de exposição, ganho de pontos extras e sugestões.</li>
-        <li><strong>Modo apresentação</strong> em tela cheia para demonstração ao cliente.</li>
-        <li>Exportação para PDF (impressão do navegador).</li>
-        <li>Funciona 100% offline — dados salvos no próprio navegador.</li>
-      </ul>
+      <p>Aplicativo desenvolvido para a <strong>ARS Iluminacao</strong> auxiliar nas visitas a rede <strong>Sodimac</strong>.</p>
+      <div class="about-features">
+        <div class="feature-item">
+          <div class="feature-icon">&#128203;</div>
+          <div>
+            <strong>Cadastro completo</strong>
+            <p>Loja, visitador, data, gerente e tipo de visita.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">&#128230;</div>
+          <div>
+            <strong>Controle de produtos</strong>
+            <p>Lista com codigo, EAN, exposicao, quantidade e estoque ideal.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">&#128247;</div>
+          <div>
+            <strong>Fotos ANTES e DEPOIS</strong>
+            <p>Registre a evolucao dos expositores com evidencias visuais.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">&#128200;</div>
+          <div>
+            <strong>Relatorio automatico</strong>
+            <p>Indicadores, comparativos e sugestoes gerados automaticamente.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">&#127916;</div>
+          <div>
+            <strong>Modo apresentacao</strong>
+            <p>Tela cheia para demonstrar resultados ao cliente.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">&#128274;</div>
+          <div>
+            <strong>100% offline</strong>
+            <p>Funciona sem internet. Dados salvos no navegador.</p>
+          </div>
+        </div>
+      </div>
+      <div class="about-footer">
+        <p class="muted">Versao 1.0 &mdash; Desenvolvido para Genoma Consultoria</p>
+        <button class="btn primary" id="btn-install-about" style="display:none">Instalar no dispositivo</button>
+      </div>
     </div>
   </section>
 
@@ -192,10 +269,10 @@
 <div id="modal-report" class="modal hidden">
   <div class="modal-inner report-area">
     <div class="modal-head no-print">
-      <h2>Relatório Comparativo</h2>
+      <h2>Relatorio Comparativo</h2>
       <div>
-        <button class="btn ghost" onclick="presentMode()">▶ Modo Apresentação</button>
-        <button class="btn ghost" onclick="window.print()">🖨 Imprimir / PDF</button>
+        <button class="btn ghost" onclick="presentMode()">&#9654; Modo Apresentacao</button>
+        <button class="btn ghost" onclick="window.print()">&#128424; Imprimir / PDF</button>
         <button class="btn ghost" onclick="closeModal()">Fechar</button>
       </div>
     </div>
@@ -203,22 +280,62 @@
   </div>
 </div>
 
-<!-- ============ MODAL: APRESENTAÇÃO ============ -->
+<!-- ============ MODAL: APRESENTACAO ============ -->
 <div id="modal-present" class="present hidden">
-  <button class="present-close no-print" onclick="closePresent()">✕ Sair</button>
-  <button class="present-nav prev no-print" onclick="presentNav(-1)">‹</button>
-  <button class="present-nav next no-print" onclick="presentNav(1)">›</button>
+  <button class="present-close no-print" onclick="closePresent()">&#10005; Sair</button>
+  <button class="present-nav prev no-print" onclick="presentNav(-1)">&#8249;</button>
+  <button class="present-nav next no-print" onclick="presentNav(1)">&#8250;</button>
   <div id="present-slide" class="present-slide"></div>
   <div class="present-counter no-print" id="present-counter"></div>
 </div>
 
 <script src="app.js"></script>
 <script>
+  // Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('service-worker.js').catch(()=>{});
     });
   }
+
+  // PWA Install Prompt
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('install-banner').classList.remove('hidden');
+    const btnAbout = document.getElementById('btn-install-about');
+    if(btnAbout) btnAbout.style.display = 'inline-block';
+  });
+
+  document.getElementById('btn-install').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const result = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('install-banner').classList.add('hidden');
+  });
+
+  document.getElementById('btn-dismiss').addEventListener('click', () => {
+    document.getElementById('install-banner').classList.add('hidden');
+  });
+
+  const btnAbout = document.getElementById('btn-install-about');
+  if(btnAbout) {
+    btnAbout.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const result = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      btnAbout.style.display = 'none';
+      document.getElementById('install-banner').classList.add('hidden');
+    });
+  }
+
+  window.addEventListener('appinstalled', () => {
+    document.getElementById('install-banner').classList.add('hidden');
+    deferredPrompt = null;
+  });
 </script>
 </body>
 </html>

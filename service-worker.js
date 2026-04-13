@@ -1,4 +1,4 @@
-const CACHE = 'ars-visitas-v1';
+const CACHE = 'ars-visitas-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -6,7 +6,8 @@ const ASSETS = [
   './app.js',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './logo-ars.png'
 ];
 
 self.addEventListener('install', e => {

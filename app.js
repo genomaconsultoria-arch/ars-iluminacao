@@ -68,9 +68,32 @@ document.querySelectorAll('.nav-btn').forEach(b=>{
 function renderDashboard(){
   const list  = document.getElementById('visit-list');
   const empty = document.getElementById('empty-state');
+  const hero  = document.getElementById('welcome-hero');
+  const head  = document.getElementById('visits-head');
+  const heroStats = document.getElementById('hero-stats');
   list.innerHTML='';
-  if(state.visits.length===0){ empty.classList.remove('hidden'); return; }
+
+  // Hero stats
+  const totalVisitas = state.visits.length;
+  const totalProdutos = state.visits.reduce((s,v)=>s+v.produtos.length,0);
+  const totalExpostos = state.visits.reduce((s,v)=>s+v.produtos.filter(p=>p.exposto==='S').length,0);
+  if(heroStats){
+    heroStats.innerHTML = `
+      <div class="hero-stat"><div class="num">${totalVisitas}</div><div class="lbl">Visitas</div></div>
+      <div class="hero-stat"><div class="num">${totalProdutos}</div><div class="lbl">Produtos</div></div>
+      <div class="hero-stat"><div class="num">${totalExpostos}</div><div class="lbl">Expostos</div></div>
+    `;
+  }
+
+  if(state.visits.length===0){
+    empty.classList.remove('hidden');
+    if(hero) hero.style.display='';
+    if(head) head.style.display='none';
+    return;
+  }
   empty.classList.add('hidden');
+  if(hero) hero.style.display='';
+  if(head) head.style.display='flex';
 
   state.visits.slice().reverse().forEach(v=>{
     const total = v.produtos.length;
