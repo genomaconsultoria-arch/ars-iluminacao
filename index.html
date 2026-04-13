@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARS Iluminação — Relatório de Visitação Sodimac</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ARS Visitas">
+</head>
+<body>
+
+<header class="topbar no-print">
+  <div class="brand">
+    <div class="logo">ARS</div>
+    <div>
+      <h1>ARS Iluminação</h1>
+      <small>Relatório de Visitação — Rede Sodimac</small>
+    </div>
+  </div>
+  <nav>
+    <button data-view="dashboard" class="nav-btn active">Visitas</button>
+    <button data-view="new" class="nav-btn">Nova Visita</button>
+    <button data-view="catalog" class="nav-btn">Catálogo</button>
+    <button data-view="about" class="nav-btn">Sobre</button>
+  </nav>
+</header>
+
+<main id="app">
+
+  <!-- DASHBOARD -->
+  <section id="view-dashboard" class="view active">
+    <div class="page-head">
+      <h2>Visitas realizadas</h2>
+      <button class="btn primary" onclick="showView('new')">+ Nova visita</button>
+    </div>
+    <div id="visit-list" class="grid"></div>
+    <div id="empty-state" class="empty hidden">
+      <p>Nenhuma visita cadastrada ainda.</p>
+      <button class="btn primary" onclick="showView('new')">Criar primeira visita</button>
+    </div>
+  </section>
+
+  <!-- NEW / EDIT VISIT -->
+  <section id="view-new" class="view">
+    <div class="page-head">
+      <h2 id="form-title">Nova Visita</h2>
+      <div>
+        <button class="btn ghost" onclick="showView('dashboard')">Cancelar</button>
+        <button class="btn primary" onclick="saveVisit()">Salvar Visita</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Cabeçalho</h3>
+      <div class="form-grid">
+        <label>Loja Sodimac
+          <input type="text" id="f-loja" placeholder="Ex.: Sodimac Recife">
+        </label>
+        <label>Cidade / UF
+          <input type="text" id="f-cidade" placeholder="Recife / PE">
+        </label>
+        <label>Visitador
+          <input type="text" id="f-visitador" placeholder="Nome do visitador">
+        </label>
+        <label>Data da visita
+          <input type="date" id="f-data">
+        </label>
+        <label>Gerente
+          <input type="text" id="f-br" placeholder="Nome do gerente">
+        </label>
+        <label>Tipo de visita
+          <select id="f-tipo">
+            <option>Inicial (antes)</option>
+            <option>Retorno (depois)</option>
+            <option>Comparativa (antes + depois)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Fotos do Expositor</h3>
+      <p class="muted" style="margin-bottom:14px">Registre o expositor completo antes e depois da intervenção. Você pode adicionar várias fotos em cada etapa.</p>
+      <div class="expo-grid">
+        <div class="expo-col">
+          <div class="expo-head">
+            <h4>📷 ANTES</h4>
+            <button class="btn ghost small" onclick="document.getElementById('expo-antes-input').click()">+ Adicionar fotos</button>
+            <input type="file" id="expo-antes-input" accept="image/*" capture="environment" multiple style="display:none" onchange="addExpoPhotos(event,'antes')">
+          </div>
+          <div id="expo-antes" class="expo-gallery"></div>
+        </div>
+        <div class="expo-col">
+          <div class="expo-head">
+            <h4>📷 DEPOIS</h4>
+            <button class="btn ghost small" onclick="document.getElementById('expo-depois-input').click()">+ Adicionar fotos</button>
+            <input type="file" id="expo-depois-input" accept="image/*" capture="environment" multiple style="display:none" onchange="addExpoPhotos(event,'depois')">
+          </div>
+          <div id="expo-depois" class="expo-gallery"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row-between">
+        <h3>Produtos vistoriados</h3>
+        <div>
+          <button class="btn ghost" onclick="loadCatalogToVisit()">Carregar catálogo padrão</button>
+          <button class="btn ghost" onclick="addRow()">+ Adicionar produto</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="produtos-table">
+          <thead>
+            <tr>
+              <th>Img</th>
+              <th>Código</th>
+              <th>Cód. Barras<br>(EAN)</th>
+              <th>Produto</th>
+              <th>Exposto<br>(S/N)</th>
+              <th>Qtd Loja</th>
+              <th>Observações</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="produtos-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Conclusões / sugestões gerais</h3>
+      <textarea id="f-conclusoes" rows="4" placeholder="Resumo executivo da visita, sugestões de melhorias, próximos passos..."></textarea>
+    </div>
+  </section>
+
+  <!-- CATALOG -->
+  <section id="view-catalog" class="view">
+    <div class="page-head">
+      <h2>Catálogo de produtos ARS</h2>
+      <button class="btn ghost" onclick="resetCatalog()">Restaurar catálogo padrão</button>
+    </div>
+    <div class="card">
+      <p class="muted">Catálogo base usado no formulário de visita. Você pode editar, adicionar ou remover itens.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Imagem</th>
+              <th>Código</th>
+              <th>Cód. Barras (EAN)</th>
+              <th>Produto</th>
+              <th>Estoque ideal<br>gancheira</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="catalog-body"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn primary" onclick="addCatalogItem()">+ Adicionar item ao catálogo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="view-about" class="view">
+    <div class="card">
+      <h2>Sobre o aplicativo</h2>
+      <p>Aplicativo desenvolvido para a <strong>ARS Iluminação</strong> auxiliar nas visitas à rede <strong>Sodimac</strong>. Replica o relatório de visitação em papel utilizado em campo e adiciona recursos digitais:</p>
+      <ul>
+        <li>Cadastro completo da visita (loja, visitador, data, BR/setor).</li>
+        <li>Lista de produtos com código, exposto S/N, quantidade, preço e estoque ideal de gancheira.</li>
+        <li><strong>Importação de fotos ANTES e DEPOIS</strong> por produto.</li>
+        <li><strong>Relatório comparativo automático</strong> com indicadores de melhoria, % de evolução de exposição, ganho de pontos extras e sugestões.</li>
+        <li><strong>Modo apresentação</strong> em tela cheia para demonstração ao cliente.</li>
+        <li>Exportação para PDF (impressão do navegador).</li>
+        <li>Funciona 100% offline — dados salvos no próprio navegador.</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ MODAL: COMPARATIVO ============ -->
+<div id="modal-report" class="modal hidden">
+  <div class="modal-inner report-area">
+    <div class="modal-head no-print">
+      <h2>Relatório Comparativo</h2>
+      <div>
+        <button class="btn ghost" onclick="presentMode()">▶ Modo Apresentação</button>
+        <button class="btn ghost" onclick="window.print()">🖨 Imprimir / PDF</button>
+        <button class="btn ghost" onclick="closeModal()">Fechar</button>
+      </div>
+    </div>
+    <div id="report-content"></div>
+  </div>
+</div>
+
+<!-- ============ MODAL: APRESENTAÇÃO ============ -->
+<div id="modal-present" class="present hidden">
+  <button class="present-close no-print" onclick="closePresent()">✕ Sair</button>
+  <button class="present-nav prev no-print" onclick="presentNav(-1)">‹</button>
+  <button class="present-nav next no-print" onclick="presentNav(1)">›</button>
+  <div id="present-slide" class="present-slide"></div>
+  <div class="present-counter no-print" id="present-counter"></div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+    });
+  }
+</script>
+</body>
+</html>
