@@ -5,6 +5,56 @@
 
 const STORAGE_KEY  = 'ars_visits_v3';
 const CATALOG_KEY  = 'ars_catalog_v3';
+const GS_URL_KEY   = 'ars_gsheets_url';
+
+/* ---------- Google Sheets sync ---------- */
+function getGSheetsUrl(){ return localStorage.getItem(GS_URL_KEY) || ''; }
+function setGSheetsUrl(url){ localStorage.setItem(GS_URL_KEY, url||''); }
+
+async function syncVisitToSheets(visit){
+  const url = getGSheetsUrl();
+  if(!url) return {ok:false, skipped:true};
+  try{
+    const resp = await fetch(url, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'save', visita: visit})
+    });
+    return {ok:true};
+  }catch(err){
+    console.warn('Sync falhou:', err);
+    return {ok:false, error: err.message};
+  }
+}
+
+async function deleteVisitFromSheets(id){
+  const url = getGSheetsUrl();
+  if(!url) return;
+  try{
+    await fetch(url, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'delete', id: id})
+    });
+  }catch(err){ console.warn('Delete remoto falhou:', err); }
+}
+
+async function loadVisitsFromSheets(){
+  const url = getGSheetsUrl();
+  if(!url){ alert('Configure a URL do Google Sheets em Configuracoes.'); return; }
+  try{
+    const resp = await fetch(url + '?action=list');
+    const data = await resp.json();
+    if(data.ok){
+      const count = (data.visitas||[]).length;
+      alert(`Dados carregados do Google Sheets: ${count} visita(s) encontrada(s).\n\nObservacao: a sincronizacao ocorre automaticamente a cada salvamento.`);
+    }
+  }catch(err){
+    alert('Erro ao carregar do Google Sheets: ' + err.message);
+  }
+}
 
 /* ---------- Catálogo padrão (extraído dos relatórios em papel) ---------- */
 const mkItem = (codigo, produto) => ({codigo, ean:'', produto, estoqueIdeal:'', img:''});
@@ -59,6 +109,7 @@ function showView(name){
   if(name==='dashboard') renderDashboard();
   if(name==='new' && !state.editingId) resetForm();
   if(name==='catalog') renderCatalog();
+  if(name==='config') renderConfig();
 }
 document.querySelectorAll('.nav-btn').forEach(b=>{
   b.addEventListener('click', ()=>showView(b.dataset.view));
@@ -251,6 +302,13 @@ function saveVisit(){
   }
   saveJSON(STORAGE_KEY, state.visits);
   state.editingId=null;
+
+  // Sincronizar com Google Sheets (nao bloqueia)
+  const visitNoPhotos = {...v, expoAntes:[], expoDepois:[], produtos: v.produtos.map(p=>({...p, img:''}))};
+  syncVisitToSheets(visitNoPhotos).then(r=>{
+    if(r.ok) console.log('Sincronizado com Google Sheets');
+  });
+
   showView('dashboard');
 }
 function editVisit(id){
@@ -276,7 +334,39 @@ function deleteVisit(id){
   if(!confirm('Excluir esta visita? Não é possível desfazer.')) return;
   state.visits = state.visits.filter(v=>v.id!==id);
   saveJSON(STORAGE_KEY, state.visits);
+  deleteVisitFromSheets(id);
   renderDashboard();
+}
+
+/* ---------- CONFIGURACOES ---------- */
+function saveGSheetsConfig(){
+  const url = document.getElementById('f-gsheets-url').value.trim();
+  setGSheetsUrl(url);
+  alert(url ? 'URL salva! As proximas visitas serao sincronizadas automaticamente.' : 'URL removida. Sincronizacao desativada.');
+  renderConfig();
+}
+function renderConfig(){
+  const input = document.getElementById('f-gsheets-url');
+  if(input) input.value = getGSheetsUrl();
+  const status = document.getElementById('sync-status');
+  if(status){
+    const url = getGSheetsUrl();
+    status.innerHTML = url
+      ? '<span style="color:#16a34a">&#9679; Sincronizacao ATIVA</span>'
+      : '<span style="color:#6b7280">&#9679; Sincronizacao desativada (salvando apenas localmente)</span>';
+  }
+}
+async function syncAllVisits(){
+  const url = getGSheetsUrl();
+  if(!url){ alert('Configure a URL antes.'); return; }
+  if(!confirm('Sincronizar todas as '+state.visits.length+' visitas para o Google Sheets?')) return;
+  let ok = 0;
+  for(const v of state.visits){
+    const vNoPhotos = {...v, expoAntes:[], expoDepois:[], produtos: v.produtos.map(p=>({...p, img:''}))};
+    const r = await syncVisitToSheets(vNoPhotos);
+    if(r.ok) ok++;
+  }
+  alert(`Sincronizacao concluida: ${ok}/${state.visits.length} visitas enviadas.`);
 }
 
 /* ---------- CATÁLOGO ---------- */

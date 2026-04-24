@@ -32,6 +32,9 @@
     <button data-view="catalog" class="nav-btn">
       <span class="nav-icon">&#128218;</span> Catalogo
     </button>
+    <button data-view="config" class="nav-btn">
+      <span class="nav-icon">&#9881;</span> Config
+    </button>
     <button data-view="about" class="nav-btn">
       <span class="nav-icon">&#9432;</span> Sobre
     </button>
@@ -203,6 +206,54 @@
       <div style="margin-top:12px">
         <button class="btn primary" onclick="addCatalogItem()">+ Adicionar item ao catalogo</button>
       </div>
+    </div>
+  </section>
+
+  <!-- CONFIG -->
+  <section id="view-config" class="view">
+    <div class="page-head">
+      <h2>Configuracoes</h2>
+    </div>
+    <div class="card">
+      <h3>&#128202; Sincronizacao com Google Sheets</h3>
+      <p class="muted">Salve automaticamente todas as visitas em uma planilha Google. As fotos ficam salvas localmente no app.</p>
+      <div id="sync-status" style="margin:10px 0;font-weight:600"></div>
+      <label>URL do aplicativo da web do Google Apps Script
+        <input type="text" id="f-gsheets-url" placeholder="https://script.google.com/macros/s/AKfyc.../exec" style="margin-top:6px">
+      </label>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn primary" onclick="saveGSheetsConfig()">Salvar URL</button>
+        <button class="btn ghost" onclick="syncAllVisits()">Sincronizar todas as visitas</button>
+        <button class="btn ghost" onclick="loadVisitsFromSheets()">Testar conexao</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>&#128221; Como configurar o Google Sheets</h3>
+      <ol style="line-height:1.8;font-size:14px;color:var(--text)">
+        <li>Acesse <a href="https://sheets.google.com" target="_blank">sheets.google.com</a> e crie uma nova planilha chamada <strong>ARS Visitas</strong>.</li>
+        <li>Na planilha, va em <strong>Extensoes &gt; Apps Script</strong>.</li>
+        <li>Apague o codigo padrao e cole o script fornecido (arquivo <code>google-apps-script.gs</code> do projeto).</li>
+        <li>Clique no disquete para salvar o script.</li>
+        <li>Clique em <strong>Implantar &gt; Nova implantacao</strong>.</li>
+        <li>Clique na engrenagem e selecione <strong>Aplicativo da Web</strong>.</li>
+        <li>Defina: <em>Executar como</em> = "Eu", <em>Quem tem acesso</em> = "Qualquer pessoa".</li>
+        <li>Clique em <strong>Implantar</strong> e autorize o acesso.</li>
+        <li>Copie a URL do aplicativo da web gerada.</li>
+        <li>Cole a URL no campo acima e clique em "Salvar URL".</li>
+      </ol>
+      <p class="muted" style="margin-top:12px">Apos configurar, toda vez que voce salvar uma visita o app envia automaticamente os dados para o Google Sheets.</p>
+    </div>
+
+    <div class="card">
+      <h3>&#128190; Armazenamento local</h3>
+      <p>O app mantém uma copia completa das visitas (com fotos) no proprio navegador/celular. Isso garante que:</p>
+      <ul style="line-height:1.7">
+        <li>Voce pode trabalhar <strong>offline</strong> (sem internet).</li>
+        <li>Os dados ficam salvos mesmo fechando o app.</li>
+        <li>As fotos grandes nao consomem espaco do Google Sheets.</li>
+      </ul>
+      <p class="muted" style="margin-top:10px">Se limpar os dados do navegador, as informacoes locais sao apagadas. Por isso a sincronizacao com Google Sheets funciona como <strong>backup na nuvem</strong>.</p>
     </div>
   </section>
 
